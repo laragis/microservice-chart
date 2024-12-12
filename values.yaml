@@ -793,7 +793,7 @@ rbac:
 serviceAccount:
   ## @param serviceAccount.create Enable creation of ServiceAccount for Microservice pod
   ##
-  create: true
+  create: false
   ## @param serviceAccount.name The name of the ServiceAccount to use.
   ## If not set and create is true, a name is generated using the common.names.fullname template
   ##
@@ -812,7 +812,7 @@ serviceAccount:
 ## @param pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `pdb.minAvailable` and `pdb.maxUnavailable` are empty.
 ##
 pdb:
-  create: true
+  create: false
   minAvailable: ""
   maxUnavailable: ""
 ## Microservice Autoscaling configuration
