@@ -319,3 +319,24 @@ Init container definition for waiting for Container to be ready
     - name: BITNAMI_DEBUG
       value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
 {{- end -}}
+
+{{/*
+Return the configmap with the Microservice configuration
+*/}}
+{{- define "ms.configmapName" -}}
+{{- if .Values.existingConfigmap -}}
+    {{- printf "%s" (tpl .Values.existingConfigmap $) -}}
+{{- else -}}
+    {{- printf "%s" (printf "%s-configuration" (include "common.names.fullname" .)) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a configmap object should be created for Microservice
+*/}}
+{{- define "ms.createConfigmap" -}}
+{{- if and .Values.configuration (not .Values.existingConfigmap) }}
+    {{- true -}}
+{{- else -}}
+{{- end -}}
+{{- end -}}

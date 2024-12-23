@@ -125,10 +125,20 @@ extraEnvVarsCM: ""
 ## @param extraEnvVarsSecret Name of existing Secret containing extra env vars
 ##
 extraEnvVarsSecret: ""
+## @param configuration Specify content for Microservice configuration (basic one auto-generated based on other values otherwise)
+##
+configuration: {}
+## @param existingConfigmap The name of an existing ConfigMap with your custom Microservice configuration
+##
+existingConfigmap: ""
 
 ## @section Microservice deployment parameters
 ##
 
+## @param kind Use either Deployment (default), StatefulSet or DaemonSet
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+##
+kind: Deployment
 ## @param replicaCount Number of Microservice replicas to deploy
 ## NOTE: ReadWriteMany PVC(s) are required if replicaCount > 1
 ##
@@ -138,7 +148,11 @@ replicaCount: 1
 revisionHistoryLimit: 10
 ## @param updateStrategy.type Microservice deployment strategy type
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+## ONLY FOR DEPLOYMENTS:
+## Can be set to RollingUpdate or Recreate
 ## NOTE: Set it to `Recreate` if you use a PV that cannot be mounted on multiple pods
+## ONLY FOR STATEFULSETS:
+## Can be set to RollingUpdate or OnDelete
 ## e.g:
 ## updateStrategy:
 ##  type: RollingUpdate
@@ -148,22 +162,54 @@ revisionHistoryLimit: 10
 ##
 updateStrategy:
   type: RollingUpdate
-## @param schedulerName Alternate scheduler
-## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+## @param initContainers Add additional init containers to the Microservice pods
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+## e.g:
+## initContainers:
+##  - name: your-image-name
+##    image: your-image
+##    imagePullPolicy: Always
+##    command: ['sh', '-c', 'copy themes and plugins from git and push to /bitnami/ms/wp-content. Should work with extraVolumeMounts and extraVolumes']
 ##
-schedulerName: ""
-## @param terminationGracePeriodSeconds In seconds, time given to the Microservice pod to terminate gracefully
-## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+initContainers: []
+## @param sidecars Add additional sidecar containers to the Microservice pod
+## e.g:
+## sidecars:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
 ##
-terminationGracePeriodSeconds: ""
-## @param topologySpreadConstraints Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template
-## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+sidecars: []
+## Container ports
+## @param containerPorts.http Microservice HTTP container port
+## @param containerPorts.https Microservice HTTPS container port
+## Example:
+## containerPorts:
+##   http: 80
+##   https: 443
 ##
-topologySpreadConstraints: []
-## @param priorityClassName Name of the existing priority class to be used by Microservice pods, priority class needs to be created beforehand
-## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+containerPorts:
+  http: 80
+## @param extraContainerPorts Optionally specify extra list of additional ports for Microservice container(s)
+## e.g:
+## extraContainerPorts:
+##   - name: myservice
+##     containerPort: 9090
 ##
-priorityClassName: ""
+extraContainerPorts: []
+## @param extraVolumes Optionally specify extra list of additional volumes for Microservice pods
+##
+extraVolumes: []
+## ONLY FOR STATEFULSETS:
+## @param extraVolumeClaimTemplates Optionally specify extra list of additional volume claim templates for Tomcat pods in StatefulSet
+##
+extraVolumeClaimTemplates: []
+## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for Microservice container(s)
+##
+extraVolumeMounts: []
 ## @param automountServiceAccountToken Mount Service Account token in pod
 ##
 automountServiceAccountToken: false
@@ -176,33 +222,11 @@ hostAliases:
   - ip: "127.0.0.1"
     hostnames:
       - "status.localhost"
-## @param extraVolumes Optionally specify extra list of additional volumes for Microservice pods
+## ONLY FOR STATEFULSETS:
+## @param podManagementPolicy StatefulSet pod management policy
+## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
 ##
-extraVolumes: []
-## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for Microservice container(s)
-##
-extraVolumeMounts: []
-## @param sidecars Add additional sidecar containers to the Microservice pod
-## e.g:
-## sidecars:
-##   - name: your-image-name
-##     image: your-image
-##     imagePullPolicy: Always
-##     ports:
-##       - name: portname
-##         containerPort: 1234
-##
-sidecars: []
-## @param initContainers Add additional init containers to the Microservice pods
-## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
-## e.g:
-## initContainers:
-##  - name: your-image-name
-##    image: your-image
-##    imagePullPolicy: Always
-##    command: ['sh', '-c', 'copy themes and plugins from git and push to /bitnami/ms/wp-content. Should work with extraVolumeMounts and extraVolumes']
-##
-initContainers: []
+podManagementPolicy: OrderedReady
 ## @param podLabels Extra labels for Microservice pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
@@ -249,6 +273,22 @@ nodeSelector: {}
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
 tolerations: []
+## @param topologySpreadConstraints Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+##
+topologySpreadConstraints: []
+## @param priorityClassName Name of the existing priority class to be used by Microservice pods, priority class needs to be created beforehand
+## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+##
+priorityClassName: ""
+## @param schedulerName Alternate scheduler
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+schedulerName: ""
+## @param terminationGracePeriodSeconds In seconds, time given to the Microservice pod to terminate gracefully
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+##
+terminationGracePeriodSeconds: ""
 ## Microservice containers' resource requests and limits
 ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 ## @param resourcesPreset Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if resources is set (resources is recommended for production).
@@ -266,23 +306,6 @@ resourcesPreset: "micro"
 ##     memory: 1024Mi
 ##
 resources: {}
-## Container ports
-## @param containerPorts.http Microservice HTTP container port
-## @param containerPorts.https Microservice HTTPS container port
-## Example:
-## containerPorts:
-##   http: 80
-##   https: 443
-##
-containerPorts:
-  http: 80
-## @param extraContainerPorts Optionally specify extra list of additional ports for Microservice container(s)
-## e.g:
-## extraContainerPorts:
-##   - name: myservice
-##     containerPort: 9090
-##
-extraContainerPorts: []
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ## @param podSecurityContext.enabled Enabled Microservice pods' Security Context
@@ -325,26 +348,6 @@ containerSecurityContext:
     type: "RuntimeDefault"
 ## Configure extra options for Microservice containers' liveness, readiness and startup probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
-## @param startupProbe.enabled Enable startupProbe on Microservice containers
-## @skip startupProbe.httpGet
-## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-## @param startupProbe.periodSeconds Period seconds for startupProbe
-## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
-## @param startupProbe.failureThreshold Failure threshold for startupProbe
-## @param startupProbe.successThreshold Success threshold for startupProbe
-## Example:
-## startupProbe:
-##   enabled: true
-##   tcpSocket:
-##     port: http
-##
-startupProbe:
-  enabled: false
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 6
-  successThreshold: 1
 ## @param livenessProbe.enabled Enable livenessProbe on Microservice containers
 ## @skip livenessProbe.tcpSocket
 ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
@@ -360,10 +363,10 @@ startupProbe:
 ##
 livenessProbe:
   enabled: false
-  initialDelaySeconds: 120
+  initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 6
+  failureThreshold: 5
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on Microservice containers
 ## @skip readinessProbe.httpGet
@@ -381,10 +384,30 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: false
-  initialDelaySeconds: 30
+  initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 6
+  failureThreshold: 5
+  successThreshold: 1
+## @param startupProbe.enabled Enable startupProbe on Microservice containers
+## @skip startupProbe.httpGet
+## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+## @param startupProbe.periodSeconds Period seconds for startupProbe
+## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
+## @param startupProbe.failureThreshold Failure threshold for startupProbe
+## @param startupProbe.successThreshold Success threshold for startupProbe
+## Example:
+## startupProbe:
+##   enabled: true
+##   tcpSocket:
+##     port: http
+##
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
   successThreshold: 1
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
@@ -398,6 +421,9 @@ customStartupProbe: {}
 ## @param lifecycleHooks for the Microservice container(s) to automate configuration before or after startup
 ##
 lifecycleHooks: {}
+## @param extraPodSpec Optionally specify extra PodSpec
+##
+extraPodSpec: {}
 
 ## @section Traffic Exposure Parameters
 ##
@@ -459,6 +485,13 @@ service:
   ## @param service.extraPorts Extra port to expose on Microservice service
   ##
   extraPorts: []
+  ## ONLY FOR STATEFULSETS:
+  ## Headless service properties
+  ##
+  headless:
+    ## @param service.headless.annotations Annotations for the headless service.
+    ##
+    annotations: {}
 ## Configure the ingress resource that allows you to access the Microservice installation
 ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ##
@@ -620,6 +653,21 @@ persistence:
   ## @param persistence.annotations Persistent Volume Claim annotations
   ##
   annotations: {}
+## ONLY FOR STATEFULSETS:
+## Persistent Volume Claim Retention Policy
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+##
+persistentVolumeClaimRetentionPolicy:
+  ## @param persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for rabbitmq Statefulset
+  ##
+  enabled: false
+  ## @param persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+  ##
+  whenScaled: Retain
+  ## @param persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+  ##
+  whenDeleted: Retain
+
 ## @section Default Init Container Parameters
 ##
 defaultInitContainers:

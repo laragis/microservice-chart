@@ -1,0 +1,102 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  defaultStorageClass: ""
+
+diagnosticMode:
+  enabled: false
+
+image:
+  registry: docker.io
+  repository: laragis/ms
+  tag: 0.1.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+command: []
+
+args: []
+
+extraEnvVars: []
+
+extraEnvVarsCM: ""
+
+extraEnvVarsSecret: ""
+
+replicaCount: 1
+
+revisionHistoryLimit: 2
+
+updateStrategy:
+  type: RollingUpdate
+
+extraVolumes: []
+
+extraVolumeMounts: []
+
+initContainers: []
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+resourcesPreset: "micro"
+
+resources: {}
+
+containerPorts:
+  http: 80
+
+extraContainerPorts: []
+
+podSecurityContext:
+  enabled: false
+  fsGroup: 1001
+
+containerSecurityContext:
+  enabled: false
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+
+startupProbe:
+  enabled: false
+
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false
+
+service:
+  type: ClusterIP
+  ports:
+    http: 80
+  nodePorts:
+    http: ""
+  extraPorts: []
+
+ingress:
+  enabled: false
+  ingressClassName: ""
+  hostname: ms.local
+  path: /
+  extraHosts: []
+
+persistence:
+  enabled: false
+  storageClass: ""
+  existingClaim: ""
+
+serviceAccount:
+  create: false
+
+pdb:
+  create: false
+
+autoscaling:
+  hpa:
+    enabled: false
