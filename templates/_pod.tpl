@@ -6,8 +6,8 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Pod Spec
 */}}
-{{- define "microservice.pod" -}}
-{{- include "microservice.imagePullSecrets" . }}
+{{- define "ms.pod" -}}
+{{- include "ms.imagePullSecrets" . | nindent 0 }}
 automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
 {{- if .Values.hostAliases }}
 # yamllint disable rule:indentation
@@ -41,23 +41,23 @@ schedulerName: {{ .Values.schedulerName | quote }}
 {{- if .Values.podSecurityContext.enabled }}
 securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" $) | nindent 2 }}
 {{- end }}
-serviceAccountName: {{ include "microservice.serviceAccountName" .}}
+serviceAccountName: {{ include "ms.serviceAccountName" .}}
 {{- if .Values.terminationGracePeriodSeconds }}
 terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
 {{- end }}
 initContainers:
   {{- if .Values.defaultInitContainers.wait.enabled }}
-  {{- include "microservice.initContainers.wait" . | nindent 2 }}
+  {{- include "ms.initContainers.wait" . | nindent 2 }}
   {{- end }}
   {{- if and .Values.defaultInitContainers.volumePermissions.enabled .Values.persistence.enabled }}
-  {{- include "microservice.initContainers.volumePermissions" . | nindent 2 }}
+  {{- include "ms.initContainers.volumePermissions" . | nindent 2 }}
   {{- end }}
   {{- if .Values.initContainers }}
   {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 2 }}
   {{- end }}
 containers:
-  - name: microservice
-    image: {{ include "microservice.image" . }}
+  - name: ms
+    image: {{ include "ms.image" . }}
     imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
     {{- if .Values.containerSecurityContext.enabled }}
     securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.containerSecurityContext "context" $) | nindent 6 }}
@@ -75,34 +75,34 @@ containers:
     env:
       - name: BITNAMI_DEBUG
         value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
-      {{- if include "microservice.database.enabled" . }}
+      {{- if include "ms.database.enabled" . }}
       - name: DB_HOST
-        value: {{ include "microservice.database.host" . }}
+        value: {{ include "ms.database.host" . }}
       - name: DB_PORT
-        value: {{ include "microservice.database.port" . | quote }}
+        value: {{ include "ms.database.port" . | quote }}
       - name: DB_DATABASE
-        value: {{ include "microservice.database.name" . }}
+        value: {{ include "ms.database.name" . }}
       - name: DB_USERNAME
-        value: {{ include "microservice.database.user" . }}
-      {{- if (include "microservice.database.auth.enabled" .) }}
+        value: {{ include "ms.database.user" . }}
+      {{- if (include "ms.database.auth.enabled" .) }}
       - name: DB_PASSWORD
         valueFrom:
           secretKeyRef:
-            name: {{ include "microservice.database.secretName" . }}
-            key: {{ include "microservice.database.secretPasswordKey" . }}
+            name: {{ include "ms.database.secretName" . }}
+            key: {{ include "ms.database.secretPasswordKey" . }}
       {{- end }}
       {{- end }}
-      {{- if include "microservice.redis.enabled" . }}
+      {{- if include "ms.redis.enabled" . }}
       - name: REDIS_HOST
-        value: {{ include "microservice.redis.host" . }}
+        value: {{ include "ms.redis.host" . }}
       - name: REDIS_PORT
-        value: {{ include "microservice.redis.port" . | quote }}
-      {{- if (include "microservice.redis.auth.enabled" .) }}
+        value: {{ include "ms.redis.port" . | quote }}
+      {{- if (include "ms.redis.auth.enabled" .) }}
       - name: REDIS_PASSWORD
         valueFrom:
           secretKeyRef:
-            name: {{ include "microservice.redis.secretName" . }}
-            key: {{ include "microservice.redis.secretPasswordKey" . }}
+            name: {{ include "ms.redis.secretName" . }}
+            key: {{ include "ms.redis.secretPasswordKey" . }}
       {{- end }}
       {{- end }}
       {{- if .Values.extraEnvVars }}

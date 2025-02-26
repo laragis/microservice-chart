@@ -5,12 +5,12 @@
 ## TL;DR
 
 ```console
-helm install my-release oci://registry-1.docker.io/laragis/microservice
+helm install my-release oci://registry-1.docker.io/laragis/ms
 ```
 
 ## Introduction
 
-This chart bootstraps a [Microservice](https://github.com/laragis/containers/tree/main/laragis/microservice)
+This chart bootstraps a [Microservice](https://github.com/laragis/containers/tree/main/laragis/ms)
 deployment on
 a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
@@ -26,7 +26,7 @@ a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) 
 To install the chart with the release name `my-release`:
 
 ```console
-helm install my-release oci://REGISTRY_NAME/REPOSITORY_NAME/microservice
+helm install my-release oci://REGISTRY_NAME/REPOSITORY_NAME/ms
 ```
 
 > Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm
@@ -72,7 +72,7 @@ You may want to have Microservice connect to an external database rather than in
 your cluster. Typical reasons for this are to use a managed database service, or to share a common database server for
 all your applications. To achieve this, the chart allows you to specify credentials for an external database with
 the [`externalDatabase` parameter](#database-parameters). You should also disable the MariaDB installation with
-the `microservice.enabled` option. Here is an example:
+the `ms.enabled` option. Here is an example:
 
 ```console
 postgresql.enabled=false
@@ -84,10 +84,10 @@ externalDatabase.port=3306
 ```
 
 If the database already contains data from a previous Microservice installation, set
-the `microserviceSkipInstall` parameter to `true`. This parameter forces the container to skip the Microservice installation wizard. Otherwise, the container will assume it is a fresh installation and
+the `msSkipInstall` parameter to `true`. This parameter forces the container to skip the Microservice installation wizard. Otherwise, the container will assume it is a fresh installation and
 execute the installation wizard, potentially modifying or resetting the data in the existing database.
 
-[Refer to the container documentation for more information](https://github.com/bitnami/containers/tree/main/bitnami/microservice#connect-microservice-container-to-an-existing-database).
+[Refer to the container documentation for more information](https://github.com/bitnami/containers/tree/main/bitnami/ms#connect-ms-container-to-an-existing-database).
 
 
 ### Redis
@@ -180,7 +180,7 @@ wrj2wDbCDCFmfqnSJ+dKI3vFLlEz44sAV8jX/kd4Y6ZTQhlLbYc=
 
 ## Persistence
 
-The [LaraGIS Microservice](https://github.com/laragis/containers/tree/main/laragis/microservice) image
+The [LaraGIS Microservice](https://github.com/laragis/containers/tree/main/laragis/ms) image
 stores the Microservice data and configurations at the `/bitnami` path of the container. Persistent
 Volume Claims are used to keep the data across deployments.
 
@@ -193,7 +193,7 @@ In case you want to add extra environment variables (useful for advanced operati
 use the `extraEnvVars` property.
 
 ```yaml
-microservice:
+ms:
 extraEnvVars:
   - name: LOG_LEVEL
     value: error
@@ -288,7 +288,7 @@ the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parame
 | Name                | Description                                                                                                                    | Value                                           |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
 | `image.registry`    | Microservice image registry                                                                                  | `REGISTRY_NAME`                                 |
-| `image.repository`  | Microservice image repository                                                                                | `REPOSITORY_NAME/microservice` |
+| `image.repository`  | Microservice image repository                                                                                | `REPOSITORY_NAME/ms` |
 | `image.digest`      | Microservice image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                                            |
 | `image.pullPolicy`  | Microservice image pull policy                                                                               | `IfNotPresent`                                  |
 | `image.pullSecrets` | Microservice image pull secrets                                                                              | `[]`                                            |
@@ -395,7 +395,7 @@ the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parame
 | `ingress.pathType`                 | Ingress path type                                                                                                                                        | `ImplementationSpecific`              |
 | `ingress.apiVersion`               | Force Ingress API version (automatically detected if not set)                                                                                            | `""`                                  |
 | `ingress.ingressClassName`         | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                                            | `""`                                  |
-| `ingress.hostname`                 | Default host for the ingress record. The hostname is templated and thus can contain other variable references.                                           | `microservice.local` |
+| `ingress.hostname`                 | Default host for the ingress record. The hostname is templated and thus can contain other variable references.                                           | `ms.local` |
 | `ingress.path`                     | Default path for the ingress record                                                                                                                      | `/`                                   |
 | `ingress.annotations`              | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.                         | `{}`                                  |
 | `ingress.tls`                      | Enable TLS configuration for the host defined at `ingress.hostname` parameter                                                                            | `false`                               |
@@ -471,8 +471,8 @@ requirements | `true`                                  |
 | `mariadb.architecture`                     | MariaDB architecture. Allowed values: `standalone`
 or `replication`                                                                                                                                                        | `standalone`                            |
 | `mariadb.auth.rootPassword`                | MariaDB root password | `""`                                    |
-| `mariadb.auth.database`                    | MariaDB custom database | `bitnami_microservice` |
-| `mariadb.auth.username`                    | MariaDB custom user name | `bn_microservice`      |
+| `mariadb.auth.database`                    | MariaDB custom database | `bitnami_ms` |
+| `mariadb.auth.username`                    | MariaDB custom user name | `bn_ms`      |
 | `mariadb.auth.password`                    | MariaDB custom user password | `""`                                    |
 | `mariadb.primary.persistence.enabled`      | Enable persistence on MariaDB using PVC(
 s)                                                                                                                                                                                 | `true`                                  |
@@ -489,11 +489,11 @@ memory (essential for production
 workloads)                                                                                                          | `{}`                                    |
 | `externalDatabase.host`                    | External Database server host | `localhost`                             |
 | `externalDatabase.port`                    | External Database server port | `3306`                                  |
-| `externalDatabase.user`                    | External Database username | `bn_microservice`      |
+| `externalDatabase.user`                    | External Database username | `bn_ms`      |
 | `externalDatabase.password`                | External Database user
 password | `""`                                    |
 | `externalDatabase.database`                | External Database database
-name | `bitnami_microservice` |
+name | `bitnami_ms` |
 | `externalDatabase.existingSecret`          | The name of an existing secret with database credentials. Evaluated as a
 template | `""`                                    |
 
@@ -529,7 +529,7 @@ Alternatively, a YAML file that specifies the values for the above parameters ca
 chart. For example,
 
 ```console
-helm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/microservice
+helm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/ms
 ```
 
 > Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm
@@ -537,7 +537,7 @@ helm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/micro
 > use `REGISTRY_NAME=registry-1.docker.io`
 > and `REPOSITORY_NAME=laragis`.
 > **Tip**:
-> You can use the default [values.yaml](https://github.com/laragis/charts/tree/main/laragis/microservice/values.yaml)
+> You can use the default [values.yaml](https://github.com/laragis/charts/tree/main/laragis/ms/values.yaml)
 
 ## Troubleshooting
 

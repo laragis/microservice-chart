@@ -17,7 +17,7 @@ metadata:
 spec:
   resourcePolicy:
     containerPolicies:
-    - containerName: microservice
+    - containerName: ms
       {{- with .Values.autoscaling.vpa.controlledResources }}
       controlledResources:
         {{- toYaml . | nindent 8 }}

@@ -33,7 +33,7 @@ spec:
           protocol: TCP
     # Allow outbound connections to DB
     - ports:
-        - port: {{ include "microservice.database.port" . }}
+        - port: {{ include "ms.database.port" . }}
       {{- if .Values.postgresql.enabled }}
       to:
         - podSelector:
@@ -43,7 +43,7 @@ spec:
       {{- end }}
     # Allow outbound connections to Redis
     - ports:
-        - port: {{ include "microservice.redis.port" . }}
+        - port: {{ include "ms.redis.port" . }}
       {{- if .Values.redis.enabled }}
       to:
         - podSelector:
