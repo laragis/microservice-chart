@@ -8,7 +8,7 @@ diagnosticMode:
 
 image:
   registry: docker.io
-  repository: laragis/ms
+  repository: laragis/microservice
   tag: 0.1.0
   pullPolicy: IfNotPresent
   pullSecrets: []

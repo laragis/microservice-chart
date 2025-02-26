@@ -72,18 +72,18 @@ diagnosticMode:
 ##
 
 ## LaraGIS Microservice image
-## ref: https://hub.docker.com/r/laragis/ms/tags/
+## ref: https://hub.docker.com/r/laragis/microservice/tags/
 ## @param image.registry [default: REGISTRY_NAME] Microservice image registry
-## @param image.repository [default: REPOSITORY_NAME/ms] Microservice image repository
-## @skip image.tag ms image tag (immutable tags are recommended)
-## @param image.digest ms image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-## @param image.pullPolicy ms image pull policy
-## @param image.pullSecrets ms image pull secrets
+## @param image.repository [default: REPOSITORY_NAME/microservice] Microservice image repository
+## @skip image.tag microservice image tag (immutable tags are recommended)
+## @param image.digest microservice image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+## @param image.pullPolicy microservice image pull policy
+## @param image.pullSecrets microservice image pull secrets
 ## @param image.debug Specify if debug values should be set
 ##
 image:
   registry: docker.io
-  repository: laragis/ms
+  repository: laragis/microservice
   tag: 0.1.0
   digest: ""
   ## Specify a imagePullPolicy
@@ -102,9 +102,9 @@ image:
   ##
   debug: false
 
-## @section ms Configuration parameters
-## ms settings based on environment variables
-## ref: https://github.com/laragis/containers/tree/main/laragis/ms#environment-variables
+## @section microservice Configuration parameters
+## microservice settings based on environment variables
+## ref: https://github.com/laragis/containers/tree/main/laragis/microservice#environment-variables
 ##
 ## @param command Override default container command (useful when using custom images)
 ##
@@ -112,7 +112,7 @@ command: []
 ## @param args Override default container args (useful when using custom images)
 ##
 args: []
-## @param extraEnvVars Array with extra environment variables to add to the ms container
+## @param extraEnvVars Array with extra environment variables to add to the microservice container
 ## e.g:
 ## extraEnvVars:
 ##   - name: FOO
@@ -169,7 +169,7 @@ updateStrategy:
 ##  - name: your-image-name
 ##    image: your-image
 ##    imagePullPolicy: Always
-##    command: ['sh', '-c', 'copy themes and plugins from git and push to /bitnami/ms/wp-content. Should work with extraVolumeMounts and extraVolumes']
+##    command: ['sh', '-c', 'copy themes and plugins from git and push to /bitnami/microservice/wp-content. Should work with extraVolumeMounts and extraVolumes']
 ##
 initContainers: []
 ## @param sidecars Add additional sidecar containers to the Microservice pod
@@ -512,7 +512,7 @@ ingress:
   ingressClassName: ""
   ## @param ingress.hostname Default host for the ingress record. The hostname is templated and thus can contain other variable references.
   ##
-  hostname: ms.local
+  hostname: microservice.local
   ## @param ingress.path Default path for the ingress record
   ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
   ##
@@ -547,7 +547,7 @@ ingress:
   ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record. The host names are templated and thus can contain other variable references.
   ## e.g:
   ## extraHosts:
-  ##   - name: ms.local
+  ##   - name: microservice.local
   ##     path: /
   ##
   extraHosts: []
@@ -565,8 +565,8 @@ ingress:
   ## e.g:
   ## extraTls:
   ## - hosts:
-  ##     - ms.local
-  ##   secretName: ms.local-tls
+  ##     - microservice.local
+  ##   secretName: microservice.local-tls
   ##
   extraTls: []
   ## @param ingress.secrets Custom TLS certificates as secrets
@@ -578,7 +578,7 @@ ingress:
   ## Please see README.md for more information
   ## e.g:
   ## secrets:
-  ##   - name: ms.local-tls
+  ##   - name: microservice.local-tls
   ##     key: |-
   ##       -----BEGIN RSA PRIVATE KEY-----
   ##       ...
@@ -593,12 +593,12 @@ ingress:
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
   ## e.g:
   ## extraRules:
-  ## - host: ms.local
+  ## - host: microservice.local
   ##     http:
   ##       path: /
   ##       backend:
   ##         service:
-  ##           name: ms-svc
+  ##           name: microservice-svc
   ##           port:
   ##             name: http
   ##

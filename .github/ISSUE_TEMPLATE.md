@@ -1,4 +1,4 @@
-* ms version:
+* microservice version:
 * Helm version:
 * Operating System:
 

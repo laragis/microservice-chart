@@ -19,6 +19,6 @@ roleRef:
   name: {{ include "common.names.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "ms.serviceAccountName" . }}
+    name: {{ include "microservice.serviceAccountName" . }}
     namespace: {{ include "common.names.namespace" . | quote }}
 {{- end }}

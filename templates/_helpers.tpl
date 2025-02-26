@@ -8,21 +8,21 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Return the proper Microservice image name
 */}}
-{{- define "ms.image" -}}
+{{- define "microservice.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
-{{- define "ms.imagePullSecrets" -}}
+{{- define "microservice.imagePullSecrets" -}}
 {{- include "common.images.pullSecrets" (dict "images" (list .Values.image) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
 Create the name of the service account to use
  */}}
-{{- define "ms.serviceAccountName" -}}
+{{- define "microservice.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
     {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
@@ -34,19 +34,19 @@ Create the name of the service account to use
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "ms.postgresql.fullname" -}}
+{{- define "microservice.postgresql.fullname" -}}
 {{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
 {{- end -}}
 
 {{/*
 Return the Database Hostname
 */}}
-{{- define "ms.database.host" -}}
+{{- define "microservice.database.host" -}}
 {{- if .Values.postgresql.enabled }}
     {{- if eq .Values.postgresql.architecture "replication" }}
-        {{- printf "%s-primary" (include "ms.postgresql.fullname" .) | trunc 63 | trimSuffix "-" -}}
+        {{- printf "%s-primary" (include "microservice.postgresql.fullname" .) | trunc 63 | trimSuffix "-" -}}
     {{- else -}}
-        {{- printf "%s" (include "ms.postgresql.fullname" .) -}}
+        {{- printf "%s" (include "microservice.postgresql.fullname" .) -}}
     {{- end -}}
 {{- else -}}
     {{- printf "%s" .Values.externalDatabase.host -}}
@@ -56,7 +56,7 @@ Return the Database Hostname
 {{/*
 Return the Database Port
 */}}
-{{- define "ms.database.port" -}}
+{{- define "microservice.database.port" -}}
 {{- if .Values.postgresql.enabled }}
     {{- print .Values.postgresql.primary.service.ports.postgresql -}}
 {{- else -}}
@@ -67,7 +67,7 @@ Return the Database Port
 {{/*
 Return the Database database name
 */}}
-{{- define "ms.database.name" -}}
+{{- define "microservice.database.name" -}}
 {{- if .Values.postgresql.enabled }}
     {{- printf "%s" .Values.postgresql.auth.database -}}
 {{- else -}}
@@ -78,7 +78,7 @@ Return the Database database name
 {{/*
 Return the Database User
 */}}
-{{- define "ms.database.user" -}}
+{{- define "microservice.database.user" -}}
 {{- if .Values.postgresql.enabled }}
     {{- printf "%s" .Values.postgresql.auth.username -}}
 {{- else -}}
@@ -89,12 +89,12 @@ Return the Database User
 {{/*
 Return the Database secret name
 */}}
-{{- define "ms.database.secretName" -}}
+{{- define "microservice.database.secretName" -}}
 {{- if .Values.postgresql.enabled }}
     {{- if .Values.postgresql.auth.existingSecret -}}
         {{- printf "%s" .Values.postgresql.auth.existingSecret -}}
     {{- else -}}
-        {{- printf "%s" (include "ms.postgresql.fullname" .) -}}
+        {{- printf "%s" (include "microservice.postgresql.fullname" .) -}}
     {{- end -}}
 {{- else if .Values.externalDatabase.existingSecret -}}
     {{- include "common.tplvalues.render" (dict "value" .Values.externalDatabase.existingSecret "context" $) -}}
@@ -106,7 +106,7 @@ Return the Database secret name
 {{/*
 Return the Database password secret key
 */}}
-{{- define "ms.database.secretPasswordKey" -}}
+{{- define "microservice.database.secretPasswordKey" -}}
 {{- if .Values.postgresql.enabled -}}
     {{- print "password" -}}
 {{- else -}}
@@ -120,7 +120,7 @@ Return the Database password secret key
 {{/*
 Return the Database password secret key
 */}}
-{{- define "ms.database.secretPostgresPasswordKey" -}}
+{{- define "microservice.database.secretPostgresPasswordKey" -}}
 {{- if .Values.postgresql.enabled -}}
     {{- print "postgres-password" -}}
 {{- else -}}
@@ -134,7 +134,7 @@ Return the Database password secret key
 {{/*
 Return whether Database uses password authentication or not
 */}}
-{{- define "ms.database.auth.enabled" -}}
+{{- define "microservice.database.auth.enabled" -}}
 {{- if or (and .Values.postgresql.enabled .Values.postgresql.auth.enabled) (and (not .Values.postgresql.enabled) (or .Values.externalDatabase.password .Values.externalDatabase.existingSecret)) }}
     {{- true -}}
 {{- end -}}
@@ -143,7 +143,7 @@ Return whether Database uses password authentication or not
 {{/*
 Return whether Database is enabled or not.
 */}}
-{{- define "ms.database.enabled" -}}
+{{- define "microservice.database.enabled" -}}
 {{- if or .Values.postgresql.enabled (and (not .Values.postgresql.enabled) (ne .Values.externalDatabase.host "localhost")) }}
     {{- true -}}
 {{- end -}}
@@ -153,16 +153,16 @@ Return whether Database is enabled or not.
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "ms.redis.fullname" -}}
+{{- define "microservice.redis.fullname" -}}
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $) -}}
 {{- end -}}
 
 {{/*
 Return the Redis hostname
 */}}
-{{- define "ms.redis.host" -}}
+{{- define "microservice.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-    {{- printf "%s-master" (include "ms.redis.fullname" .) -}}
+    {{- printf "%s-master" (include "microservice.redis.fullname" .) -}}
 {{- else -}}
     {{- print .Values.externalRedis.host -}}
 {{- end -}}
@@ -171,7 +171,7 @@ Return the Redis hostname
 {{/*
 Return the Redis port
 */}}
-{{- define "ms.redis.port" -}}
+{{- define "microservice.redis.port" -}}
 {{- if .Values.redis.enabled -}}
     {{- print .Values.redis.master.service.ports.redis -}}
 {{- else -}}
@@ -182,12 +182,12 @@ Return the Redis port
 {{/*
 Return the Redis secret name
 */}}
-{{- define "ms.redis.secretName" -}}
+{{- define "microservice.redis.secretName" -}}
 {{- if .Values.redis.enabled }}
     {{- if .Values.redis.auth.existingSecret }}
         {{- printf "%s" .Values.redis.auth.existingSecret -}}
     {{- else -}}
-        {{- printf "%s" (include "ms.redis.fullname" .) -}}
+        {{- printf "%s" (include "microservice.redis.fullname" .) -}}
     {{- end -}}
 {{- else if .Values.externalRedis.existingSecret }}
     {{- printf "%s" .Values.externalRedis.existingSecret -}}
@@ -199,7 +199,7 @@ Return the Redis secret name
 {{/*
 Return the Redis secret key
 */}}
-{{- define "ms.redis.secretPasswordKey" -}}
+{{- define "microservice.redis.secretPasswordKey" -}}
 {{- if .Values.redis.enabled -}}
     {{- print "redis-password" -}}
 {{- else -}}
@@ -214,7 +214,7 @@ Return the Redis secret key
 {{/*
 Return whether Redis uses password authentication or not
 */}}
-{{- define "ms.redis.auth.enabled" -}}
+{{- define "microservice.redis.auth.enabled" -}}
 {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (and (not .Values.redis.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret)) }}
     {{- true -}}
 {{- end -}}
@@ -223,7 +223,7 @@ Return whether Redis uses password authentication or not
 {{/*
 Return whether Redis is enabled or not.
 */}}
-{{- define "ms.redis.enabled" -}}
+{{- define "microservice.redis.enabled" -}}
 {{- if or .Values.redis.enabled (and (not .Values.redis.enabled) (ne .Values.externalRedis.host "localhost")) }}
     {{- true -}}
 {{- end -}}
@@ -231,13 +231,13 @@ Return whether Redis is enabled or not.
 {{/*
 Return the proper image name (for the init container volume-permissions image)
 */}}
-{{- define "ms.initContainers.volumePermissions.image" -}}
+{{- define "microservice.initContainers.volumePermissions.image" -}}
 {{- include "common.images.image" ( dict "imageRoot" .Values.defaultInitContainers.volumePermissions.image "global" .Values.global ) -}}
 {{- end -}}
 
-{{- define "ms.initContainers.volumePermissions" -}}
+{{- define "microservice.initContainers.volumePermissions" -}}
 - name: volume-permissions
-  image: "{{ include "ms.initContainers.volumePermissions.image" . }}"
+  image: "{{ include "microservice.initContainers.volumePermissions.image" . }}"
   imagePullPolicy: {{ .Values.defaultInitContainers.volumePermissions.image.pullPolicy | quote }}
   command:
     - /bin/bash
@@ -267,7 +267,7 @@ Return the proper image name (for the init container volume-permissions image)
 {{/*
 Return the proper image name (for the default init containers)
 */}}
-{{- define "ms.initContainers.wait.image" -}}
+{{- define "microservice.initContainers.wait.image" -}}
 {{ include "common.images.image" (dict "imageRoot" .Values.defaultInitContainers.wait.image "global" .Values.global) }}
 {{- end -}}
 
@@ -275,9 +275,9 @@ Return the proper image name (for the default init containers)
 Init container definition for waiting for Container to be ready
 */}}
 
-{{- define "ms.initContainers.wait" -}}
+{{- define "microservice.initContainers.wait" -}}
 - name: wait-for-it
-  image: {{ include "ms.initContainers.wait.image" . }}
+  image: {{ include "microservice.initContainers.wait.image" . }}
   imagePullPolicy: {{ .Values.defaultInitContainers.wait.image.pullPolicy }}
   {{- if .Values.defaultInitContainers.wait.containerSecurityContext.enabled }}
   securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.defaultInitContainers.wait.containerSecurityContext "context" $) | nindent 4 }}
@@ -323,7 +323,7 @@ Init container definition for waiting for Container to be ready
 {{/*
 Return the configmap with the Microservice configuration
 */}}
-{{- define "ms.configmapName" -}}
+{{- define "microservice.configmapName" -}}
 {{- if .Values.existingConfigmap -}}
     {{- printf "%s" (tpl .Values.existingConfigmap $) -}}
 {{- else -}}
@@ -334,7 +334,7 @@ Return the configmap with the Microservice configuration
 {{/*
 Return true if a configmap object should be created for Microservice
 */}}
-{{- define "ms.createConfigmap" -}}
+{{- define "microservice.createConfigmap" -}}
 {{- if and .Values.configuration (not .Values.existingConfigmap) }}
     {{- true -}}
 {{- else -}}

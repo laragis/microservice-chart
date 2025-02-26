@@ -28,17 +28,17 @@ spec:
     metadata:
       labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
       annotations:
-        {{- if (include "ms.createConfigmap" .) }}
+        {{- if (include "microservice.createConfigmap" .) }}
         checksum/configuration: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- end }}
-        {{- if include "ms.database.enabled" . }}
+        {{- if include "microservice.database.enabled" . }}
         checksum/secret-database: {{ include (print $.Template.BasePath "/secret-database.yaml") . | sha256sum }}
         {{- end }}
-        {{- if include "ms.redis.enabled" . }}
+        {{- if include "microservice.redis.enabled" . }}
         checksum/secret-redis: {{ include (print $.Template.BasePath "/secret-redis.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
-    spec: {{- include "ms.pod" . | nindent 6 }}
+    spec: {{- include "microservice.pod" . | nindent 6 }}
 {{- end -}}
